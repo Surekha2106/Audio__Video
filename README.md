@@ -1,64 +1,101 @@
-# AI Video Translator & Dubber
+<div align="center">
 
-An AI-powered Flask web application that automatically translates and dubs videos. It extracts audio, utilizes Vosk machine learning for precise speech-to-text, translates the text, and synthesizes human-like voiceovers using neural TTS. FFmpeg dynamically syncs the new audio to the video and auto-generates localized word-level subtitles.
+# 🎬🌍 Seamless AI Video Translator & Dubber
 
-## 🚀 Features
-- **Secure User Authentication**: Full signup, login, and session management using Flask-SQLAlchemy.
-- **Offline Speech Recognition**: Uses the **Vosk** ML model to accurately transcribe audio into text with precise word-level timestamps.
-- **Language Translation**: Uses `deep-translator` to translate transcribed text into various target languages.
-- **Neural Voice Dubbing**: Converts translated text back into human-sounding speech using Microsoft Edge Neural TTS (`edge-tts`). Supports multiple languages with male and female voice variants.
-- **Dynamic Time Synchronization**: Automatically scales the video speed using `ffmpeg` to match the exact duration of the new translated AI voiceover.
-- **Automated Subtitles**: Generates synchronized `.vtt` subtitle files mapped precisely to the newly translated audio.
-- **User Dashboard**: Real-time progress tracking of translation jobs and a history log of previously translated files.
+[![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://www.python.org/downloads/)
+[![Flask](https://img.shields.io/badge/Flask-Web%20Framework-lightgrey.svg)](https://flask.palletsprojects.com/)
+[![FFmpeg](https://img.shields.io/badge/FFmpeg-Audio%2FVideo-green.svg)](https://ffmpeg.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-## 🛠 Prerequisites
+*An intelligent, multi-threaded web application that instantly translates, syncs, and dubs video and audio content into multiple languages with precision.*
 
-Before running the application, make sure you have the following installed:
+</div>
+
+<br />
+
+## 📖 About the Project
+
+This AI-powered Flask web application automatically translates and dubs videos. It extracts audio, utilizes **Vosk** offline machine learning for precise speech-to-text, translates the text, and synthesizes human-like voiceovers using **Edge Neural TTS**. **FFmpeg** then dynamically synchronizes the audio speed to the video length and auto-generates localized word-level subtitles.
+
+---
+
+## ✨ Key Features
+
+- 🔐 **Secure User Authentication:** Complete signup, login, and secure sessions via Database Mapping.
+- 🎙️ **Precise Speech Recognition:** Employs the highly accurate, offline `Vosk` ML model to transcribe audio into text with word-level timestamps.
+- 🌐 **Global Translation:** Powered by `deep-translator` to translate transcribed text to target languages instantly.
+- 🗣️ **Human-like Neural Dubbing:** Utilizes Microsoft Edge Neural TTS (`edge-tts`) to generate natural voiceovers (Male & Female voices across various languages).
+- ⏱️ **Auto-Time Synchronization:** Dynamically calculates duration differences and automatically adjusts the video time scale to seamlessly match the new spoken translation track using `ffmpeg`.
+- 📝 **Automated Subtitles:** Accurately maps the translated audio timing to auto-generate `.vtt` format subtitles.
+- 📊 **Interactive Dashboard:** Track real-time progress percentages of asynchronous background video rendering and manage historical projects.
+
+---
+
+## 🛠️ Tech Stack & Technologies
+
+- **Backend:** Python, Flask, Flask-SQLAlchemy
+- **Media Engine:** FFmpeg (extraction, filtering, scaling, muxing)
+- **AI / ML:** Vosk Offline Speech Recognition model
+- **Speech Synthesis:** Edge-TTS (Neural Voice generation)
+- **Database:** SQLite (Lightweight, robust mapping)
+
+---
+
+## 🚀 Getting Started
+
+Follow these instructions to get a copy of the project up and running on your local machine.
+
+### Prerequisites
 1. **Python 3.8+**
-2. **FFmpeg**: Must be installed and added to your system's PATH. This is required for all audio/video extraction and merging tasks.
-   - *Windows:* Download from [gyan.dev](https://www.gyan.dev/ffmpeg/builds/) or install via `winget install ffmpeg`.
-3. **Vosk Offline Model**: You must download a compatible Vosk speech recognition model.
-   - Download the model from [Vosk Models](https://alphacephei.com/vosk/models) (e.g., `vosk-model-en-us-0.22`).
-   - Extract it into the root of this project and rename the extracted folder to `VoskModel`.
+2. **[FFmpeg](https://ffmpeg.org/download.html)**: Required for all processing & rendering. You must install this system-wide and add it to your System PATH variables.
+3. **[Vosk Speech Model](https://alphacephei.com/vosk/models)**: Download a compatible language model (e.g. `vosk-model-en-us-0.22`), extract it into your project root, and explicitly rename the folder to `VoskModel`.
 
-## ⚙️ Installation
+### Installation
 
-1. **Clone the repository:**
-   ```bash
-   git clone <your-repository-url>
-   cd <repository-directory>
+1. **Clone the repo**
+   ```sh
+   git clone https://github.com/your-username/your-repo-name.git
+   cd your-repo-name
    ```
 
-2. **Set up a virtual environment (Recommended):**
-   ```bash
+2. **Create a Python Virtual Environment**
+   ```sh
    python -m venv venv
-   # On Windows:
+   
+   # Activate on Windows:
    venv\Scripts\activate
-   # On Mac/Linux:
+   
+   # Activate on macOS/Linux:
    source venv/bin/activate
    ```
 
-3. **Install the required dependencies:**
-   ```bash
+3. **Install Dependencies**
+   ```sh
    pip install -r requirements.txt
    ```
 
-## 🎮 Running the Application
-
-1. **Start the Flask server:**
-   ```bash
+4. **Launch the Application**
+   ```sh
    python project1.py
    ```
-2. **Access the Web App:**
-   Open your browser and navigate to `http://127.0.0.1:5000/`. You will be prompted to sign up/log in before you can access the dashboard to upload videos.
+   > 🌐 The application will be successfully running at `http://localhost:5000`
 
-## 📁 Project Structure
+---
 
-- `project1.py`: The main Flask application containing routes, auth, and the core video processing worker.
-- `app.db` / `users.db`: SQLite database storing user authentication data.
-- `history.json`: Stores user-specific translation history.
-- `VoskModel/`: Directory where the offline speech-to-text ML model lives.
-- `uploads/`: Temporary storage for original videos uploaded by users.
-- `temp/`: Temporary directory for intermediate processing (extracted audio, TTS `.wav` files).
-- `outputs/`: Final storage area containing the translated `.mp4` videos and `.vtt` subtitles.
-- `templates/` & `static/`: HTML templates and CSS/JS for the application UI.
+## 🏗️ Architecture & Workflow Pipeline
+
+1. **Upload:** User provides a source `.mp4` video.
+2. **Extraction:** Python executes background `FFmpeg` processes to extract a 16kHz mono `.wav` audio track.
+3. **Recognition:** The audio stream is digested by `Vosk`, calculating exact start and end millisecond timestamps for every spoken word.
+4. **Translation:** Text arrays are natively pushed through a Google Translate wrapper.
+5. **Synthesis:** `Edge-TTS` dynamically creates audio tracks containing the translated text.
+6. **Muxing & Syncing:** The system analyzes the neural voiceover's duration against the original video duration. Video speed multipliers are automatically created. The video logic, audio track, and subtitle files are perfectly interwoven.
+7. **Delivery:** The user is provided with the final translated `.vtt` subtitle block and the dubbed `.mp4` video file!
+
+---
+
+<div align="center">
+
+*Designed & developed by [Surekha A]*
+
+</div>
