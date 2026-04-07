@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}Smart AI | The Future of Video Translation{% endblock %}
+
+{% block content %}
+<div class="hero-section" style="text-align: center; padding: 6rem 0;">
+    <h1 style="font-size: 4rem; line-height: 1.1; margin-bottom: 1.5rem;">
+        Translate Your Videos <br>
+        <span class="gradient-text">Like Magic With AI</span>
+    </h1>
+    <p style="color: var(--text-muted); font-size: 1.25rem; max-width: 600px; margin: 0 auto 2.5rem;">
+        Break language barriers instantly. Our AI-powered platform transcribes, translates, and dubbs your videos in seconds.
+    </p>
+    <div style="display: flex; gap: 1rem; justify-content: center;">
+        <a href="{{ url_for('signup') }}" class="btn-primary" style="padding: 1rem 2.5rem; font-size: 1.1rem;">Start Translating for Free</a>
+        <a href="#features" class="btn-secondary" style="padding: 1rem 2.5rem; font-size: 1.1rem; border: 1px solid var(--glass-border); border-radius: 100px; color: white; text-decoration: none; backdrop-filter: blur(5px);">View Features</a>
+    </div>
+</div>
+
+<div id="features" class="features-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; margin-top: 4rem;">
+    <div class="glass-card feature-item" style="padding: 2rem; transition: var(--transition-smooth);">
+        <div style="width: 50px; height: 50px; background: rgba(99, 102, 241, 0.2); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem; font-size: 1.5rem;">⚡</div>
+        <h3 style="margin-bottom: 0.75rem;">Instant Processing</h3>
+        <p style="color: var(--text-muted);">Neural network powered translation means your content is ready in minutes, not days.</p>
+    </div>
+    <div class="glass-card feature-item" style="padding: 2rem; transition: var(--transition-smooth);">
+        <div style="width: 50px; height: 50px; background: rgba(236, 72, 153, 0.2); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem; font-size: 1.5rem;">🌍</div>
+        <h3 style="margin-bottom: 0.75rem;">100+ Languages</h3>
+        <p style="color: var(--text-muted);">Reach a global audience with support for every major language and dialect across the world.</p>
+    </div>
+    <div class="glass-card feature-item" style="padding: 2rem; transition: var(--transition-smooth);">
+        <div style="width: 50px; height: 50px; background: rgba(16, 185, 129, 0.2); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 1.5rem; font-size: 1.5rem;">🎙️</div>
+        <h3 style="margin-bottom: 0.75rem;">AI Voice Synthesis</h3>
+        <p style="color: var(--text-muted);">Natural sounding dubbing that preserves the emotion and pacing of your original video.</p>
+    </div>
+</div>
+
+<style>
+    .feature-item:hover {
+        transform: translateY(-10px);
+        background: rgba(255, 255, 255, 0.05);
+        border-color: var(--primary);
+    }
+</style>
+{% endblock %}

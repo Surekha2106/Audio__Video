@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}Smart AI | Project History{% endblock %}
+
+{% block content %}
+<div style="margin-bottom: 3rem;">
+    <h1 style="font-size: 2.5rem; margin-bottom: 0.5rem;">Project History</h1>
+    <p style="color: var(--text-muted);">View all your previously translated videos.</p>
+</div>
+
+<div class="glass-card" style="padding: 0; overflow: hidden;">
+    <table style="width: 100%; border-collapse: collapse; text-align: left;">
+        <thead style="background: rgba(255,255,255,0.05);">
+            <tr>
+                <th style="padding: 1.25rem 1.5rem; color: var(--text-muted); font-weight: 600; font-size: 0.85rem; text-transform: uppercase;">Original File</th>
+                <th style="padding: 1.25rem 1.5rem; color: var(--text-muted); font-weight: 600; font-size: 0.85rem; text-transform: uppercase;">Language</th>
+                <th style="padding: 1.25rem 1.5rem; color: var(--text-muted); font-weight: 600; font-size: 0.85rem; text-transform: uppercase;">Date</th>
+                <th style="padding: 1.25rem 1.5rem; color: var(--text-muted); font-weight: 600; font-size: 0.85rem; text-transform: uppercase;">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in history %}
+            <tr style="border-top: 1px solid var(--glass-border); transition: var(--transition-smooth);">
+                <td style="padding: 1.25rem 1.5rem; font-weight: 500;">
+                    {{ item.original }}
+                    {% if item.translated_text %}
+                    <div id="transcript-{{ loop.index }}" style="display: none; margin-top: 1rem; padding: 1rem; background: rgba(255,255,255,0.03); border-radius: 0.5rem; font-size: 0.9rem; color: var(--text-main); line-height: 1.5; border: 1px solid var(--glass-border);">
+                        <strong>Transcript:</strong><br>
+                        {{ item.translated_text }}
+                    </div>
+                    {% endif %}
+                </td>
+                <td style="padding: 1.25rem 1.5rem; color: var(--text-muted);">{{ item.target | upper }}</td>
+                <td style="padding: 1.25rem 1.5rem; color: var(--text-muted);">{{ item.timestamp }}</td>
+                <td style="padding: 1.25rem 1.5rem;">
+                    <div style="display: flex; gap: 0.5rem; align-items: center;">
+                        <a href="{{ url_for('download', filename=item.output) }}" class="btn-primary" style="padding: 0.4rem 1rem; font-size: 0.85rem;">Download</a>
+                        {% if item.translated_text %}
+                        <button onclick="toggleTranscript('transcript-{{ loop.index }}')" class="btn-secondary" style="padding: 0.4rem 1rem; font-size: 0.85rem; background: rgba(255,255,255,0.1); border: 1px solid var(--glass-border); color: white; border-radius: 0.5rem; cursor: pointer;">Transcript</button>
+                        {% endif %}
+                    </div>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="4" style="padding: 4rem; text-align: center; color: var(--text-muted);">
+                    No projects found. <a href="{{ url_for('project') }}" style="color: var(--primary);">Start one now!</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<style>
+    tbody tr:hover {
+        background: rgba(255, 255, 255, 0.02);
+    }
+</style>
+{% block extra_js %}
+<script>
+    function toggleTranscript(id) {
+        const div = document.getElementById(id);
+        if (div.style.display === "none") {
+            div.style.display = "block";
+        } else {
+            div.style.display = "none";
+        }
+    }
+</script>
+{% endblock %}
+{% endblock %}

@@ -1,0 +1,121 @@
+{% extends "base.html" %}
+
+{% block title %}Smart AI | Processing Video{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: center; align-items: center; min-height: 60vh;">
+    <div class="glass-card" style="max-width: 800px; width: 100%; text-align: center;">
+        <h2 style="font-size: 2rem; margin-bottom: 2rem;">Processing Your Masterpiece</h2>
+        
+        <div style="position: relative; width: 100%; height: 1.5rem; background: rgba(255,255,255,0.05); border-radius: 1rem; overflow: hidden; border: 1px solid var(--glass-border); margin-bottom: 1.5rem;">
+            <div id="progressBar" style="width: 0%; height: 100%; background: linear-gradient(to right, var(--primary), var(--secondary)); transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1); border-radius: 1rem;"></div>
+        </div>
+        
+        <div id="statusText" style="font-size: 1.25rem; font-weight: 600; color: var(--text-main); margin-bottom: 0.5rem;">Initializing...</div>
+        <div id="percentageText" style="font-size: 0.95rem; color: var(--text-muted); margin-bottom: 2rem;">0% Complete</div>
+        
+        <div id="actionArea" style="display: none; border-top: 1px solid var(--glass-border); padding-top: 2rem; margin-top: 1rem;">
+            <p style="font-weight: 600; color: var(--text-main); margin-bottom: 1.5rem;">🎉 Your video is ready!</p>
+            
+            <!-- Video Preview -->
+            <style>
+                video::cue {
+                    background: none;
+                    color: #fff;
+                    text-shadow: 0 0 10px rgba(0,0,0,0.8), 0 0 20px rgba(0,0,0,0.8);
+                    font-size: 2.5rem;
+                    font-family: 'Outfit', sans-serif;
+                    font-weight: 800;
+                    text-transform: uppercase;
+                }
+            </style>
+            <div style="border-radius: 1.5rem; overflow: hidden; margin-bottom: 2rem; background: #000; line-height: 0; position: relative; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);">
+                <video id="videoPreview" controls style="width: 100%; max-height: 400px;">
+                    <source id="videoSource" src="" type="video/mp4">
+                    <track id="videoSubtitles" label="Translated" kind="subtitles" srclang="en" src="" default>
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+
+            <!-- Subsites (Subtitles) Section -->
+            <div id="subtitleSection" style="text-align: left; margin-bottom: 2rem; padding: 1.5rem; background: rgba(255,255,255,0.05); border-radius: 0.75rem; border: 1px solid var(--glass-border);">
+                <h4 style="color: var(--primary); margin-top: 0; margin-bottom: 0.5rem; font-family: 'Outfit'; font-weight: 600;">Translated Transcript:</h4>
+                <p id="translatedText" style="color: var(--text-main); line-height: 1.6; margin: 0; font-size: 1rem;"></p>
+            </div>
+
+            <div style="display: flex; gap: 1rem; justify-content: center;">
+                <a id="downloadBtn" href="#" class="btn-primary" style="padding: 0.85rem 1.5rem; font-size: 1rem; flex: 1;">Download Video</a>
+                <a href="{{ url_for('project') }}" class="btn-secondary" style="padding: 0.85rem 1.5rem; font-size: 1rem; flex: 1; text-align: center; border-radius: 0.75rem; background: rgba(255,255,255,0.1); border: 1px solid var(--glass-border); color: white; text-decoration: none;">New Project</a>
+            </div>
+        </div>
+        
+        <div id="errorArea" style="display: none; border-top: 1px solid #ef444455; padding-top: 2rem; margin-top: 1rem;">
+            <p id="errorMessage" style="color: #ef4444; margin-bottom: 1.5rem;">Something went wrong during processing.</p>
+            <a href="{{ url_for('project') }}" class="btn-primary" style="padding: 1rem 2.5rem; font-size: 1.1rem; display: inline-block; background: #334155;">Try Again</a>
+        </div>
+    </div>
+</div>
+
+<script>
+    const jobId = "{{ job_id }}";
+    const progressBar = document.getElementById('progressBar');
+    const statusText = document.getElementById('statusText');
+    const percentageText = document.getElementById('percentageText');
+    const actionArea = document.getElementById('actionArea');
+    const errorArea = document.getElementById('errorArea');
+    const downloadBtn = document.getElementById('downloadBtn');
+
+    function checkStatus() {
+        fetch(`/progress_status/${jobId}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.progress === -1) {
+                    statusText.innerText = "Error Occurred";
+                    percentageText.innerText = "Failed";
+                    document.getElementById('errorMessage').innerText = data.error || "Processing failed. Please check your video format.";
+                    errorArea.style.display = 'block';
+                    return;
+                }
+
+                const progress = data.progress;
+                progressBar.style.width = progress + "%";
+                percentageText.innerText = progress + "% Complete";
+
+                if (progress < 20) statusText.innerText = "Extracting Audio...";
+                else if (progress < 40) statusText.innerText = "Transcribing Speech...";
+                else if (progress < 60) statusText.innerText = "Translating Content...";
+                else if (progress < 80) statusText.innerText = "Synthesizing AI Voice...";
+                else if (progress < 100) statusText.innerText = "Finalizing Dubbing...";
+                else {
+                    statusText.innerText = "Ready for Export!";
+                    percentageText.innerText = "100% Complete";
+                    
+                    // Update UI with results
+                    document.getElementById('translatedText').innerText = data.translated_text || "No translation text available.";
+                    document.getElementById('videoSource').src = `/output_video/${data.output}`;
+                    
+                    const subtTrack = document.getElementById('videoSubtitles');
+                    if (data.subtitle_file) {
+                        subtTrack.src = `/subtitles/${data.subtitle_file}`;
+                    }
+                    
+                    document.getElementById('videoPreview').load();
+                    
+                    downloadBtn.href = `/download/${data.output}`;
+                    actionArea.style.display = 'block';
+                    return; // Stop polling
+                }
+
+                // Poll every 1.5 seconds
+                setTimeout(checkStatus, 1500);
+            })
+            .catch(error => {
+                console.error('Error fetching progress:', error);
+                setTimeout(checkStatus, 3000); // Retry later
+            });
+    }
+
+    // Start polling
+    setTimeout(checkStatus, 1000);
+</script>
+{% endblock %}
